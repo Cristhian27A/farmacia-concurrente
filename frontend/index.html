@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmacia Nacional - Sistema de Consulta de Medicamentos</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-prescription-bottle-alt"></i>
+                <span>FARMACIA PANAMÁ</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link active">Inicio</a>
+                <a href="farmacia.html" class="nav-link">Farmacia</a>
+                <a href="#sucursales" class="nav-link">Sucursales</a>
+                <a href="#contacto" class="nav-link">Contacto</a>
+                <a href="#nosotros" class="nav-link">Nosotros</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-login" onclick="mostrarLogin()">
+                    <i class="fas fa-user"></i>
+                    Identificarse
+                </button>
+                <a href="carrito.html" class="cart-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Sistema de Consulta de Medicamentos</h1>
+            <p>Consulta disponibilidad y precios en tiempo real desde cualquier centro de salud</p>
+            <div class="hero-buttons">
+                <button class="btn-primary" onclick="irAFarmacia()">
+                    <i class="fas fa-search"></i>
+                    Consultar Medicamentos
+                </button>
+                <button class="btn-secondary" onclick="mostrarInfo()">
+                    <i class="fas fa-info-circle"></i>
+                    Cómo Funciona
+                </button>
+            </div>
+        </div>
+        <div class="hero-image">
+            <i class="fas fa-tablets"></i>
+        </div>
+    </section>
+
+    <!-- Carrusel de instituciones -->
+    <section class="institutions">
+        <h2>Centros de Salud Asociados</h2>
+        <div class="institution-carousel">
+            <div class="institution-item">
+                <i class="fas fa-hospital"></i>
+                <span>Hospital Regional</span>
+            </div>
+            <div class="institution-item">
+                <i class="fas fa-clinic-medical"></i>
+                <span>CSS</span>
+            </div>
+            <div class="institution-item">
+                <i class="fas fa-first-aid"></i>
+                <span>Centro de Salud</span>
+            </div>
+            <div class="institution-item">
+                <i class="fas fa-ambulance"></i>
+                <span>Urgencias</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Características -->
+    <section class="features">
+        <div class="feature-card">
+            <i class="fas fa-bolt"></i>
+            <h3>Consulta en Tiempo Real</h3>
+            <p>Información actualizada al instante sobre disponibilidad de medicamentos</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-users"></i>
+            <h3>Múltiples Usuarios</h3>
+            <p>Sistema concurrente que soporta muchas consultas simultáneas</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-money-bill-wave"></i>
+            <h3>Precios Especiales</h3>
+            <p>Jubilados reciben sus medicamentos completamente gratis</p>
+        </div>
+    </section>
+
+    <!-- Modal de Login -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarLogin()">&times;</span>
+            <h2>Identificación de Usuario</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="identificacion">Número de Identificación:</label>
+                    <input type="text" id="identificacion" placeholder="Ej: 8-123-456" required>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Verificar Usuario
+                </button>
+            </form>
+            <div id="loginResult" class="result-message"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Farmacia Concurrente</h4>
+                <p>Sistema universitario de gestión de medicamentos</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contacto</h4>
+                <p><i class="fas fa-phone"></i> 507 63621915</p>
+                <p><i class="fas fa-envelope"></i> info@farmaciaconcurrente.edu.pa</p>
+            </div>
+            <div class="footer-section">
+                <h4>Redes Sociales</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Farmacia Nacional - Proyecto Universitario</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras - Farmacia Nacional</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-prescription-bottle-alt"></i>
+                <span>FARMACIA PANAMÁ</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Inicio</a>
+                <a href="farmacia.html" class="nav-link">Farmacia</a>
+                <a href="carrito.html" class="nav-link active">Carrito</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-login" onclick="mostrarLogin()">
+                    <i class="fas fa-user"></i>
+                    <span id="user-name">Identificarse</span>
+                </button>
+                <a href="carrito.html" class="cart-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header del Carrito -->
+    <section class="cart-header">
+        <div class="container">
+            <h1><i class="fas fa-shopping-cart"></i> Mi Carrito</h1>
+            <p>Revisa y gestiona tus medicamentos seleccionados</p>
+        </div>
+    </section>
+
+    <!-- Contenido del Carrito -->
+    <section class="cart-content">
+        <div class="container">
+            <!-- Carrito vacío -->
+            <div id="emptyCart" class="empty-cart">
+                <i class="fas fa-cart-arrow-down"></i>
+                <h2>Tu carrito está vacío</h2>
+                <p>Agrega algunos medicamentos desde nuestra farmacia</p>
+                <button class="btn-primary" onclick="irAFarmacia()">
+                    <i class="fas fa-pills"></i>
+                    Ir a Farmacia
+                </button>
+            </div>
+
+            <!-- Carrito con items -->
+            <div id="cartWithItems" class="cart-with-items" style="display: none;">
+                <div class="cart-items">
+                    <div class="cart-header-row">
+                        <span>Producto</span>
+                        <span>Precio</span>
+                        <span>Cantidad</span>
+                        <span>Total</span>
+                        <span>Acciones</span>
+                    </div>
+                    <div id="cartItemsList">
+                        <!-- Los items del carrito se cargarán aquí -->
+                    </div>
+                </div>
+
+                <!-- Resumen del pedido -->
+                <div class="cart-summary">
+                    <h3>Resumen del Pedido</h3>
+                    
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">$0.00</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Descuento Jubilado:</span>
+                        <span id="discount">-$0.00</span>
+                    </div>
+                    
+                    <div class="summary-row total">
+                        <span>Total a Pagar:</span>
+                        <span id="total">$0.00</span>
+                    </div>
+
+                    <div id="userTypeInfo" class="user-type-info">
+                        <!-- Información del tipo de usuario -->
+                    </div>
+
+                    <button class="btn-primary btn-checkout" onclick="procesarPedido()">
+                        <i class="fas fa-check-circle"></i>
+                        Confirmar Pedido
+                    </button>
+
+                    <button class="btn-secondary" onclick="vaciarCarrito()">
+                        <i class="fas fa-trash"></i>
+                        Vaciar Carrito
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal de Login -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarLogin()">&times;</span>
+            <h2>Identificación de Usuario</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="identificacion">Número de Identificación:</label>
+                    <input type="text" id="identificacion" placeholder="Ej: 8-123-456" required>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Verificar Usuario
+                </button>
+            </form>
+            <div id="loginResult" class="result-message"></div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarConfirmacion()">&times;</span>
+            <h2><i class="fas fa-check-circle"></i> Pedido Confirmado</h2>
+            <div id="confirmationContent">
+                <!-- Contenido de confirmación dinámico -->
+            </div>
+            <div class="confirmation-actions">
+                <button class="btn-primary" onclick="cerrarConfirmacion()">
+                    <i class="fas fa-thumbs-up"></i>
+                    Aceptar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/carrito.js"></script>
+</body>
+</html>

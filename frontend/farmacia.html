@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmacia - Consulta de Medicamentos</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-prescription-bottle-alt"></i>
+                <span>FARMACIA PANAMÁ</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Inicio</a>
+                <a href="farmacia.html" class="nav-link active">Farmacia</a>
+                <a href="#sucursales" class="nav-link">Sucursales</a>
+                <a href="#contacto" class="nav-link">Contacto</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-login" onclick="mostrarLogin()">
+                    <i class="fas fa-user"></i>
+                    <span id="user-name">Identificarse</span>
+                </button>
+                <a href="carrito.html" class="cart-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header de Farmacia -->
+    <section class="pharmacy-header">
+        <div class="container">
+            <h1>Catálogo de Medicamentos</h1>
+            <p>Consulta disponibilidad y precios en tiempo real</p>
+            
+            <!-- Barra de búsqueda -->
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar medicamentos...">
+                    <button onclick="buscarMedicamentos()">Buscar</button>
+                </div>
+                <button class="btn-secondary" onclick="listarTodosMedicamentos()">
+                    <i class="fas fa-list"></i>
+                    Ver Todos
+                </button>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="categoryFilter">Categoría:</label>
+                    <select id="categoryFilter" onchange="filtrarPorCategoria()">
+                        <option value="">Todas las categorías</option>
+                        <option value="Analgésico">Analgésico</option>
+                        <option value="Antibiótico">Antibiótico</option>
+                        <option value="Antiinflamatorio">Antiinflamatorio</option>
+                        <option value="Antialérgico">Antialérgico</option>
+                        <option value="Digestivo">Digestivo</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="stockFilter">Disponibilidad:</label>
+                    <select id="stockFilter" onchange="filtrarPorStock()">
+                        <option value="">Todos</option>
+                        <option value="disponible">En Stock</option>
+                        <option value="agotado">Agotados</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lista de medicamentos -->
+    <section class="medicamentos-container">
+        <div class="container">
+            <div id="loadingMessage" class="loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <span>Cargando medicamentos...</span>
+            </div>
+            
+            <div id="medicamentosGrid" class="medicamentos-grid">
+                <!-- Los medicamentos se cargarán aquí dinámicamente -->
+            </div>
+            
+            <div id="noResults" class="no-results" style="display: none;">
+                <i class="fas fa-search"></i>
+                <h3>No se encontraron medicamentos</h3>
+                <p>Intenta con otros términos de búsqueda</p>
+            </div>
+            
+            <div id="resultsInfo" class="results-info"></div>
+        </div>
+    </section>
+
+    <!-- Modal de Login (mismo que index.html) -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarLogin()">&times;</span>
+            <h2>Identificación de Usuario</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="identificacion">Número de Identificación:</label>
+                    <input type="text" id="identificacion" placeholder="Ej: 8-123-456" required>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Verificar Usuario
+                </button>
+            </form>
+            <div id="loginResult" class="result-message"></div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/farmacia.js"></script>
+</body>
+</html>

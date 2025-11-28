@@ -1,0 +1,15 @@
+{
+  "name": "farmacia-concurrente",
+  "version": "1.0.0",
+  "description": "Sistema concurrente de consulta de medicamentos",
+  "main": "start-server.js",
+  "scripts": {
+    "start": "node start-server.js"
+  },
+  "dependencies": {
+    "java": "^0.12.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

@@ -1,16 +1,21 @@
 package farmacia;
 
-import farmacia.models.Medicamento;
+import farmacia.models.Medicamento;//  Modelos de datos (Medicamento, Usuario)
 import farmacia.models.Usuario;
 import java.io.*;
 import java.net.Socket;
+//Colecciones (Listas, Mapas) para manejar datos
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Maneja la comunicación con un cliente específico
- * Cada cliente conectado tiene su propio ClientHandler en un hilo separado
- * Esto permite multiple clientes simultáneamente (CONCURRENCIA)
+Manejador que procesa las solicitudes de un cliente específico.
+Cada cliente tiene su propio handler ejecutándose en un hilo independiente,
+permitiendo múltiples conexiones simultáneas (concurrencia).
  */
+
 public class ClientHandler implements Runnable {
     private Socket clientSocket;
     private DatabaseManager db;
@@ -22,7 +27,7 @@ public class ClientHandler implements Runnable {
      */
     public ClientHandler(Socket socket) {
         this.clientSocket = socket;
-        this.db = DatabaseManager.getInstance();
+        this.db = DatabaseManager.getInstance();//Obtiene instancia única de DatabaseManager
         
         try {
             // Configurar streams de entrada/salida
@@ -94,6 +99,10 @@ public class ClientHandler implements Runnable {
                 calcularPrecioTotal(datos);
                 break;
                 
+            case "PROCESAR_COMPRA":
+                procesarCompra(datos);
+                break;
+                
             case "SALUDO":
                 writer.println("HOLA|Servidor Farmacia Concurrente activo - Hilo: " + Thread.currentThread().getName());
                 break;
@@ -130,14 +139,14 @@ public class ClientHandler implements Runnable {
         
         writer.println("FIN_LISTA|" + medicamentos.size() + " medicamentos encontrados");
     }
-
-    private void buscarMedicamentos(String nombre) {
+//funcion buscarMedicamento
+    private void buscarMedicamentos(String nombre) {//
         List<Medicamento> medicamentos = db.buscarMedicamentos(nombre);
         
         if (medicamentos.isEmpty()) {
             writer.println("BUSQUEDA_RESULTADOS|No se encontraron medicamentos para: " + nombre);
             return;
-        }
+        }// Filtra medicamentos por nombre
 
         for (Medicamento med : medicamentos) {
             String mensaje = String.format("MEDICAMENTO|%d|%s|%.2f|%d|%s|%s|%s",
@@ -157,7 +166,7 @@ public class ClientHandler implements Runnable {
 
     private void consultarUsuario(String identificacion) {
         Usuario usuario = db.buscarUsuario(identificacion);
-        
+        //Busca usuario en la base de datos
         if (usuario != null) {
             String mensaje = String.format("USUARIO_ENCONTRADO|%d|%s|%s|%s",
                 usuario.getId(),
@@ -242,6 +251,120 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    // MÉTODO Procesar compra completa con validación de stock
+    private void procesarCompra(String compraData) {
+        try {
+            // Formato: "ID_USUARIO|ID1:CANT1,ID2:CANT2,..."
+            String[] partes = compraData.split("\\|");
+            if (partes.length < 2) {
+                writer.println("ERROR_COMPRA|Formato inválido");
+                return;
+            }
+            
+            String idUsuario = partes[0];
+            String[] items = partes[1].split(",");
+            
+            // 1. Verificar usuario
+            Usuario usuario = db.buscarUsuario(idUsuario);
+            if (usuario == null) {
+                writer.println("ERROR_COMPRA|Usuario no encontrado: " + idUsuario);
+                return;
+            }
+            
+            // 2. Preparar datos de la compra
+            Map<Integer, Integer> itemsCompra = new HashMap<>();
+            List<String> erroresStock = new ArrayList<>();
+            double total = 0.0;
+            
+            // 3. Verificar stock para todos los items
+            for (String item : items) {
+                String[] itemData = item.split(":");
+                if (itemData.length != 2) {
+                    erroresStock.add("Formato inválido: " + item);
+                    continue;
+                }
+                
+                try {
+                    int idMedicamento = Integer.parseInt(itemData[0]);
+                    int cantidad = Integer.parseInt(itemData[1]);
+                    
+                    if (cantidad <= 0) {
+                        erroresStock.add("Cantidad inválida para medicamento ID " + idMedicamento);
+                        continue;
+                    }
+                    
+                    // Verificar stock disponible
+                    if (!db.verificarStockSuficiente(idMedicamento, cantidad)) {
+                        Medicamento med = db.obtenerMedicamentoPorId(idMedicamento);
+                        if (med != null) {
+                            erroresStock.add(med.getNombre() + " - Stock: " + med.getStock() + ", Solicitado: " + cantidad);
+                        } else {
+                            erroresStock.add("Medicamento ID " + idMedicamento + " no existe");
+                        }
+                    } else {
+                        itemsCompra.put(idMedicamento, cantidad);
+                    }
+                } catch (NumberFormatException e) {
+                    erroresStock.add("Datos inválidos: " + item);
+                }
+            }
+            
+            // 4. Si hay errores de stock, cancelar
+            if (!erroresStock.isEmpty()) {
+                writer.println("ERROR_STOCK|" + String.join("; ", erroresStock));
+                return;
+            }
+            
+            // 5. Procesar la compra - actualizar stock
+            List<String> itemsProcesados = new ArrayList<>();
+            boolean compraExitosa = true;
+            List<String> erroresActualizacion = new ArrayList<>();
+            
+            for (Map.Entry<Integer, Integer> entry : itemsCompra.entrySet()) {
+                int idMedicamento = entry.getKey();
+                int cantidad = entry.getValue();
+                Medicamento med = db.obtenerMedicamentoPorId(idMedicamento);
+                
+                if (med == null) {
+                    erroresActualizacion.add("Medicamento ID " + idMedicamento + " no encontrado");
+                    compraExitosa = false;
+                    continue;
+                }
+                
+                // Actualizar stock (restar cantidad)
+                boolean stockActualizado = db.actualizarStock(idMedicamento, -cantidad);
+                
+                if (stockActualizado) {
+                    double subtotal = med.calcularPrecioFinal(usuario.esJubilado()) * cantidad;
+                    total += subtotal;
+                    itemsProcesados.add(med.getNombre() + " x" + cantidad + " = $" + String.format("%.2f", subtotal));
+                    System.out.println("✅ Stock actualizado: " + med.getNombre() + " -" + cantidad + " unidades");
+                } else {
+                    compraExitosa = false;
+                    erroresActualizacion.add("Error actualizando stock de " + med.getNombre());
+                    break;
+                }
+            }
+            
+            // 6. Responder al cliente
+            if (compraExitosa && !itemsProcesados.isEmpty()) {
+                String tipoPago = usuario.esJubilado() ? "GRATIS (Jubilado)" : "PAGO";
+                String respuesta = String.format("COMPRA_EXITOSA|%.2f|%s|%s|%s", 
+                    total, tipoPago, usuario.getNombre(), String.join("; ", itemsProcesados));
+                writer.println(respuesta);
+                System.out.println("🎉 Compra exitosa para usuario: " + usuario.getNombre() + " - Total: $" + total);
+            } else {
+                String mensajeError = !erroresActualizacion.isEmpty() ? 
+                    String.join("; ", erroresActualizacion) : "Error desconocido al procesar compra";
+                writer.println("ERROR_COMPRA|" + mensajeError);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            writer.println("ERROR_COMPRA|Error procesando compra: " + e.getMessage());
+        }
+    }
+
     /**
      * Cierra la conexión con el cliente
      */
@@ -251,10 +374,12 @@ public class ClientHandler implements Runnable {
             if (writer != null) writer.close();
             if (clientSocket != null) clientSocket.close();
             
-            System.out.println("�� Conexión con cliente cerrada - Hilo: " + Thread.currentThread().getName());
+            System.out.println("✅ Conexión con cliente cerrada - Hilo: " + Thread.currentThread().getName());
             
         } catch (IOException e) {
             System.err.println("❌ Error cerrando conexión: " + e.getMessage());
         }
     }
 }
+//cada cliente es un nueo usuario, la base de datos es compartida pero thread-safe
+// esto nos proporciona múltiples clientes simultáneos y estabilidad

@@ -13,6 +13,8 @@ public class PruebaCargaConcurrente {
     private static final int NUM_CLIENTES = 10;
     private static final AtomicInteger clientesExitosos = new AtomicInteger(0);
     private static final AtomicInteger totalOperaciones = new AtomicInteger(0);
+    private static final AtomicInteger comprasExitosas = new AtomicInteger(0);
+    private static final AtomicInteger erroresStock = new AtomicInteger(0);
 
     public static void main(String[] args) throws InterruptedException {
         System.out.println("🧪 INICIANDO PRUEBA DE CONCURRENCIA");
@@ -54,6 +56,8 @@ public class PruebaCargaConcurrente {
         System.out.println("Tiempo total: " + duracionTotal + " ms");
         System.out.println("Clientes exitosos: " + clientesExitosos.get() + "/" + NUM_CLIENTES);
         System.out.println("Operaciones realizadas: " + totalOperaciones.get());
+        System.out.println("Compras exitosas: " + comprasExitosas.get());
+        System.out.println("Errores de stock: " + erroresStock.get());
         System.out.println("Tiempo promedio por cliente: " + (duracionTotal / NUM_CLIENTES) + " ms");
         System.out.println("Operaciones por segundo: " + (totalOperaciones.get() * 1000L / duracionTotal));
 
@@ -78,17 +82,36 @@ public class PruebaCargaConcurrente {
                 "LISTAR_MEDICAMENTOS|",
                 "BUSCAR_MEDICAMENTOS|para",
                 "CONSULTAR_USUARIO|8-123-456",
-                "CALCULAR_PRECIO|8-123-456|1,2"
+                "CALCULAR_PRECIO|8-123-456|1,2",
+                "PROCESAR_COMPRA|8-123-456|1:1,2:2"  // NUEVO: Probar compra
             };
 
             for (String operacion : operaciones) {
                 writer.println(operacion);
                 totalOperaciones.incrementAndGet();
                 
-                // Leer respuesta (simplificado para la prueba)
+                // Leer respuesta y procesar según el tipo
                 String respuesta = reader.readLine();
-                if (respuesta != null && respuesta.startsWith("ERROR")) {
-                    System.err.println("❌ " + clientName + " - Error en operación: " + respuesta);
+                if (respuesta != null) {
+                    if (respuesta.startsWith("ERROR")) {
+                        System.err.println("❌ " + clientName + " - Error en operación: " + respuesta);
+                        
+                        // Contabilizar errores de stock específicos
+                        if (respuesta.contains("STOCK") || respuesta.contains("stock")) {
+                            erroresStock.incrementAndGet();
+                        }
+                    } else if (respuesta.startsWith("COMPRA_EXITOSA")) {
+                        comprasExitosas.incrementAndGet();
+                        System.out.println("✅ " + clientName + " - Compra exitosa: " + respuesta);
+                    } else if (respuesta.startsWith("HOLA")) {
+                        System.out.println("👋 " + clientName + " - " + respuesta);
+                    } else if (respuesta.startsWith("USUARIO_ENCONTRADO")) {
+                        System.out.println("👤 " + clientName + " - Usuario verificado");
+                    } else if (respuesta.startsWith("PRECIO_TOTAL")) {
+                        System.out.println("💰 " + clientName + " - Precio calculado: " + respuesta);
+                    } else if (respuesta.startsWith("FIN_LISTA") || respuesta.startsWith("FIN_BUSQUEDA")) {
+                        System.out.println("📦 " + clientName + " - " + respuesta);
+                    }
                 }
                 
                 // Pequeña pausa entre operaciones

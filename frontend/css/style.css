@@ -1098,7 +1098,7 @@ body {
     }
 }
 
-/* Agregar al final del CSS */
+/* Estilos para imágenes de medicamentos */
 .medicamento-image img, .item-image img {
     width: 80px;
     height: 80px;
@@ -1124,4 +1124,169 @@ body {
     height: 80px;
     background: var(--background-color);
     border-radius: 0.5rem;
+}
+
+.medicamento-image, .item-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+}
+/* Estilos para selectores de cantidad */
+.cantidad-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.btn-cantidad {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #ddd;
+    background: #f8f9fa;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.btn-cantidad:hover:not(:disabled) {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.btn-cantidad:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.input-cantidad {
+    width: 60px;
+    height: 32px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.input-cantidad:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.input-cantidad:disabled {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
+
+/* Estilos para notificaciones */
+.notificacion {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 16px;
+    min-width: 300px;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    border-left: 4px solid #007bff;
+}
+
+.notificacion.mostrar {
+    transform: translateX(0);
+}
+
+.notificacion-success {
+    border-left-color: #28a745;
+}
+
+.notificacion-error {
+    border-left-color: #dc3545;
+}
+
+.notificacion-warning {
+    border-left-color: #ffc107;
+}
+
+.notificacion-contenido {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notificacion-contenido i {
+    font-size: 18px;
+}
+
+.notificacion-success .notificacion-contenido i {
+    color: #28a745;
+}
+
+.notificacion-error .notificacion-contenido i {
+    color: #dc3545;
+}
+
+.notificacion-warning .notificacion-contenido i {
+    color: #ffc107;
+}
+
+/* Estilos para items del carrito */
+.item-stock {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.cart-item .cantidad-selector {
+    margin: 0;
+}
+
+.success-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.success-icon {
+    font-size: 48px;
+    color: #28a745;
+    margin-bottom: 10px;
+}
+
+.purchase-items {
+    margin: 15px 0;
+}
+
+.items-list {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.purchase-item {
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.success-message {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 15px;
+}
+
+.success-message p {
+    margin: 5px 0;
+    color: #155724;
 }

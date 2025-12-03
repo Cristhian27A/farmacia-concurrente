@@ -6,6 +6,227 @@
     <title>Carrito de Compras - Farmacia Nacional</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Estilos adicionales para los selectores de cantidad */
+        .cantidad-selector {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-cantidad {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: #f8f9fa;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .btn-cantidad:hover:not(:disabled) {
+            background: #e9ecef;
+        }
+        
+        .btn-cantidad:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .input-cantidad {
+            width: 50px;
+            height: 30px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .cart-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-header-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .medicamento-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .medicamento-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .fallback-icon {
+            font-size: 24px;
+            color: #6c757d;
+            display: none;
+        }
+        
+        .item-details h4 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        
+        .item-desc {
+            margin: 0 0 5px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .item-category {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .item-stock {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            display: block;
+        }
+        
+        .item-price, .item-total {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .btn-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .btn-remove:hover {
+            background: #c82333;
+        }
+        
+        .user-type-info {
+            padding: 10px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        
+        .user-type-info.jubilado {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .user-type-info.regular {
+            background: #cce7ff;
+            color: #004085;
+            border: 1px solid #b3d7ff;
+        }
+        
+        .user-type-info.unknown {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .success-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .success-icon {
+            color: #28a745;
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .purchase-items {
+            margin: 15px 0;
+        }
+        
+        .items-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        
+        .purchase-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .purchase-item:last-child {
+            border-bottom: none;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .cart-item {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .cart-header-row {
+                display: none;
+            }
+            
+            .item-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .cantidad-selector {
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Barra de navegación -->
@@ -60,19 +281,19 @@
                 <div class="cart-items">
                     <div class="cart-header-row">
                         <span>Producto</span>
-                        <span>Precio</span>
+                        <span>Precio Unitario</span>
                         <span>Cantidad</span>
-                        <span>Total</span>
+                        <span>Total Item</span>
                         <span>Acciones</span>
                     </div>
                     <div id="cartItemsList">
-                        <!-- Los items del carrito se cargarán aquí -->
+                        <!-- Los items del carrito se cargarán aquí dinámicamente -->
                     </div>
                 </div>
 
                 <!-- Resumen del pedido -->
                 <div class="cart-summary">
-                    <h3>Resumen del Pedido</h3>
+                    <h3><i class="fas fa-receipt"></i> Resumen del Pedido</h3>
                     
                     <div class="summary-row">
                         <span>Subtotal:</span>
@@ -85,12 +306,12 @@
                     </div>
                     
                     <div class="summary-row total">
-                        <span>Total a Pagar:</span>
-                        <span id="total">$0.00</span>
+                        <span><strong>Total a Pagar:</strong></span>
+                        <span id="total"><strong>$0.00</strong></span>
                     </div>
 
                     <div id="userTypeInfo" class="user-type-info">
-                        <!-- Información del tipo de usuario -->
+                        <!-- Información del tipo de usuario se cargará dinámicamente -->
                     </div>
 
                     <button class="btn-primary btn-checkout" onclick="procesarPedido()">
@@ -102,6 +323,10 @@
                         <i class="fas fa-trash"></i>
                         Vaciar Carrito
                     </button>
+
+                    <div class="cart-actions-info">
+                        <p><small><i class="fas fa-info-circle"></i> Puedes ajustar las cantidades usando los botones +/-</small></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -111,11 +336,12 @@
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="cerrarLogin()">&times;</span>
-            <h2>Identificación de Usuario</h2>
+            <h2><i class="fas fa-user-check"></i> Identificación de Usuario</h2>
             <form id="loginForm">
                 <div class="form-group">
                     <label for="identificacion">Número de Identificación:</label>
                     <input type="text" id="identificacion" placeholder="Ej: 8-123-456" required>
+                    <small class="form-text">Ingresa tu número de identificación para verificar descuentos</small>
                 </div>
                 <button type="submit" class="btn-primary">
                     <i class="fas fa-sign-in-alt"></i>
@@ -130,20 +356,88 @@
     <div id="confirmationModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="cerrarConfirmacion()">&times;</span>
-            <h2><i class="fas fa-check-circle"></i> Pedido Confirmado</h2>
             <div id="confirmationContent">
                 <!-- Contenido de confirmación dinámico -->
             </div>
             <div class="confirmation-actions">
-                <button class="btn-primary" onclick="cerrarConfirmacion()">
-                    <i class="fas fa-thumbs-up"></i>
-                    Aceptar
+                <button class="btn-primary" onclick="cerrarConfirmacion(); irAFarmacia()">
+                    <i class="fas fa-shopping-cart"></i>
+                    Seguir Comprando
+                </button>
+                <button class="btn-secondary" onclick="cerrarConfirmacion()">
+                    <i class="fas fa-times"></i>
+                    Cerrar
                 </button>
             </div>
         </div>
     </div>
 
-    <script src="js/app.js"></script>
-    <script src="js/carrito.js"></script>
+    <!-- Notificaciones -->
+    <div id="notification" class="notification" style="display: none;">
+        <div class="notification-content">
+            <span id="notification-message"></span>
+            <button onclick="ocultarNotificacion()" class="notification-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="js/app.js" defer></script>
+    <script src="js/carrito.js" defer></script>
+    <script>
+        // Inicialización adicional
+        document.addEventListener('DOMContentLoaded', function() {
+            // Actualizar contador del carrito
+            actualizarContadorCarrito();
+            
+            // Configurar el formulario de login
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const identificacion = document.getElementById('identificacion').value.trim();
+                    if (identificacion) {
+                        enviarMensaje('CONSULTAR_USUARIO', identificacion);
+                    }
+                });
+            }
+            
+            // Cerrar modales al hacer click fuera
+            window.onclick = function(event) {
+                const loginModal = document.getElementById('loginModal');
+                const confirmationModal = document.getElementById('confirmationModal');
+                
+                if (event.target === loginModal) {
+                    cerrarLogin();
+                }
+                if (event.target === confirmationModal) {
+                    cerrarConfirmacion();
+                }
+            }
+        });
+        
+        // Función para mostrar notificaciones
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            const notification = document.getElementById('notification');
+            const message = document.getElementById('notification-message');
+            
+            if (!notification || !message) return;
+            
+            message.textContent = mensaje;
+            notification.className = `notification ${tipo}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                ocultarNotificacion();
+            }, 5000);
+        }
+        
+        function ocultarNotificacion() {
+            const notification = document.getElementById('notification');
+            if (notification) {
+                notification.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

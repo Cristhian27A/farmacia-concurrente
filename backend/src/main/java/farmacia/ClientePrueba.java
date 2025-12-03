@@ -1,23 +1,26 @@
 package farmacia;
-
-import java.io.*;
-import java.net.Socket;
+// importaciones
+import java.io.*;// Para entrada/salida de datos (lectura/escritura)
+import java.net.Socket; //  Para conexión de red con servidor
 import java.util.Scanner;
 
 /**
- * Cliente de prueba para demostrar la concurrencia del servidor
- * Se pueden ejecutar múltiples instancias de esta clase para simular varios clientes
+ Cliente de prueba que simula múltiples usuarios conectándose 
+ simultáneamente al servidor de farmacia para probar concurrencia.
  */
-public class ClientePrueba {
-    private Socket socket;
-    private BufferedReader reader;
-    private PrintWriter writer;
-    private String nombreCliente;
 
+//Declaramos variables ya sean publicas o privadas
+public class ClientePrueba {
+    private Socket socket; // Conexión con el servidor
+    private BufferedReader reader;// Lee respuestas del servidor
+    private PrintWriter writer;// Envía comandos al servidor
+    private String nombreCliente; // Identificador para las pruebas
+
+    // este constructor Recibe un nombre para identificar cada cliente en las pruebas
     public ClientePrueba(String nombre) {
         this.nombreCliente = nombre;
     }
-
+//metodo
     public void conectar() {
         try {
             // Conectar al servidor local
@@ -38,8 +41,8 @@ public class ClientePrueba {
             System.err.println("❌ [" + nombreCliente + "] Error conectando: " + e.getMessage());
         }
     }
-
-    private void escucharServidor() {
+//  Metodo escucharServidor
+    private void escucharServidor() { //Hilo independiente que escucha mensajes del servidor
         try {
             String mensaje;
             while ((mensaje = reader.readLine()) != null) {
@@ -47,9 +50,10 @@ public class ClientePrueba {
             }
         } catch (IOException e) {
             System.out.println("🔌 [" + nombreCliente + "] Desconectado del servidor");
-        }
+        }// Finaliza Cuando se cierra la conexión
     }
 
+    //metodo enviarComandosPrueba
     private void enviarComandosPrueba() {
         try {
             // Pequeña pausa para sincronización
@@ -69,6 +73,11 @@ public class ClientePrueba {
             Thread.sleep(600);
             
             writer.println("CALCULAR_PRECIO|8-123-456|1,2,3");
+            Thread.sleep(800);
+            
+            // NUEVO: Probar compra real
+            writer.println("PROCESAR_COMPRA|8-123-456|1:1,2:1");
+            Thread.sleep(800);
             
             // Mantener conexión abierta por un tiempo
             Thread.sleep(3000);
@@ -81,7 +90,7 @@ public class ClientePrueba {
             desconectar();
         }
     }
-
+// metodo desconectar
     private void desconectar() {
         try {
             if (reader != null) reader.close();
@@ -90,7 +99,7 @@ public class ClientePrueba {
         } catch (IOException e) {
             System.err.println("❌ Error desconectando: " + e.getMessage());
         }
-    }
+    } // Cierra todos los recursos de conexión de forma segura
 
     public static void main(String[] args) {
         // Crear múltiples clientes para probar concurrencia
